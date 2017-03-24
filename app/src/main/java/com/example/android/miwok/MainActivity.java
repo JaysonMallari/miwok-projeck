@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -28,10 +29,69 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the content of the activity to use the activity_main.xml layout file
         setContentView(R.layout.activity_main);
+
+            myClickers();
     }
 
-    public void viewNumbersPage(View v){
-        Intent intent = new Intent(this, NumbersActivity.class);
-        startActivity(intent);
+
+    public void myClickers(){
+        //find the view to show by category=ies;
+        TextView numbers = (TextView) findViewById(R.id.numbers);
+        TextView familyMembers = (TextView) findViewById(R.id.family);
+        TextView colors = (TextView) findViewById(R.id.colors);
+        TextView phrases = (TextView) findViewById(R.id.phrases);
+
+        // set the OnClickListeneter for the NUMBERS category
+        numbers.setOnClickListener(new View.OnClickListener(){
+
+            // execute this method when the NUMBERS category is been clicked.
+            @Override
+            public void onClick(View v){
+                Intent numbersIntent = new Intent(MainActivity.this, NumbersActivity.class);
+                startActivity(numbersIntent);
+            }
+
+        });
+
+
+        // set the OnClickListener for FAMILYMEMBERS category.
+        familyMembers.setOnClickListener( new View.OnClickListener(){
+
+          // method to be executed when the family members category is been clicked on.
+            @Override
+            public void onClick(View v){
+               Intent familyIntent =  new Intent(MainActivity.this, FamilyMembersActivity.class);
+                startActivity(familyIntent);
+            }
+
+        });
+
+
+
+        //set OnClickListener for the category COLORS.
+        colors.setOnClickListener( new View.OnClickListener(){
+
+            // method to be executed when the COLORS category is been clicked on.
+            @Override
+            public void onClick(View v){
+                Intent colorsIntent  = new Intent(MainActivity.this, ColorsActivity.class);
+                startActivity(colorsIntent);
+            }
+        });
+
+
+
+        // set OnClickListener for the category PHRASES
+        phrases.setOnClickListener( new View.OnClickListener(){
+
+            // method to tbe executed when the category PHRASES  is been clicked on.
+            @Override
+            public void onClick(View v){
+                Intent phrasesIntent =  new Intent(MainActivity.this, PhrasesActivity.class);
+                startActivity(phrasesIntent);
+            }
+        });
     }
+
+
 }
