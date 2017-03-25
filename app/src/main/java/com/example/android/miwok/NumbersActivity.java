@@ -2,32 +2,54 @@ package com.example.android.miwok;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class NumbersActivity extends AppCompatActivity {
-    ArrayList<String> words  = new ArrayList<String>(
-            Arrays.asList("one", "two" , "three" , "four" , "five" , "six" , "seven" , "eight" , "nine" ,"ten"));
+    ArrayList<Word> words  = new ArrayList<Word>(
+            Arrays.asList(
+                    new Word("one","lutti"),
+                    new Word("two","otiiko"),
+                    new Word("three","tolooksu"),
+                    new Word("four","oyyisa"),
+                    new Word("five","massokka"),
+                    new Word("six","temmokka"),
+                    new Word("seven","kenekaku"),
+                    new Word("eight","kawinta"),
+                    new Word("nine","wo'e"),
+                    new Word("ten","na'aacha")
+            ));
+
+    //"two" , "three" , "four" , "five" , "six" , "seven" , "eight" , "nine" ,"ten"));
+
+    /**
+     *      Word w  = new Word("one","lutti");
+     *      words.add(w);
+     *      OR
+     *      words.add(new Word("one","lutti"));
+     * @param savedInstanceState
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_numbers);
+        setContentView(R.layout.words_list);
 
-        display();
+        // call the setNumberAdapter onCreate method
+        setNumberAdapter();
     }
 
-    public void display(){
-        LinearLayout rootView = (LinearLayout) findViewById(R.id.root_view);
+    //set the number adapter
+    public void setNumberAdapter(){
+        // Construct a new WordAdapter
+        WordAdapter itemsAdapter =  new WordAdapter(this, words);
 
+        // Cast the number Listview
+        ListView listView = (ListView) findViewById(R.id.list);
 
-        for (int x=0; x<words.size(); x++){
-            TextView wordView = new TextView(this);
-            wordView.setText(words.get(x));
-            rootView.addView(wordView);
-        }
+        //set the adapter to our ListView
+        listView.setAdapter(itemsAdapter);
     }
 }
