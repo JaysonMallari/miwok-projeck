@@ -11,14 +11,14 @@ public class ColorsActivity extends AppCompatActivity {
 
     ArrayList<Word> words  = new ArrayList<Word>(
             Arrays.asList(
-                    new Word("red","wetetti"),
-                    new Word("green","chokokki"),
-                    new Word("brown","takaakki"),
-                    new Word("gray","topoppi"),
-                    new Word("black","kululli"),
-                    new Word("white","kelelli"),
-                    new Word("dusty yellow","ṭopiisә"),
-                    new Word("mustard yellow","chiwiiṭә")
+                    new Word("red","wetetti",R.drawable.color_red),
+                    new Word("green","chokokki",R.drawable.color_green),
+                    new Word("brown","takaakki",R.drawable.color_brown),
+                    new Word("gray","topoppi",R.drawable.color_gray),
+                    new Word("black","kululli",R.drawable.color_black),
+                    new Word("white","kelelli",R.drawable.color_white),
+                    new Word("dusty yellow","ṭopiisә",R.drawable.color_dusty_yellow),
+                    new Word("mustard yellow","chiwiiṭә",R.drawable.color_mustard_yellow)
 
             ));
 

@@ -10,16 +10,16 @@ import java.util.Arrays;
 public class NumbersActivity extends AppCompatActivity {
     ArrayList<Word> words  = new ArrayList<Word>(
             Arrays.asList(
-                    new Word("one","lutti"),
-                    new Word("two","otiiko"),
-                    new Word("three","tolooksu"),
-                    new Word("four","oyyisa"),
-                    new Word("five","massokka"),
-                    new Word("six","temmokka"),
-                    new Word("seven","kenekaku"),
-                    new Word("eight","kawinta"),
-                    new Word("nine","wo'e"),
-                    new Word("ten","na'aacha")
+                    new Word("one","lutti",R.drawable.number_one),
+                    new Word("two","otiiko",R.drawable.number_two),
+                    new Word("three","tolooksu",R.drawable.number_three),
+                    new Word("four","oyyisa",R.drawable.number_four),
+                    new Word("five","massokka",R.drawable.number_five),
+                    new Word("six","temmokka",R.drawable.number_six),
+                    new Word("seven","kenekaku",R.drawable.number_seven),
+                    new Word("eight","kawinta",R.drawable.number_eight),
+                    new Word("nine","wo'e",R.drawable.number_nine),
+                    new Word("ten","na'aacha",R.drawable.number_ten)
             ));
 
     //"two" , "three" , "four" , "five" , "six" , "seven" , "eight" , "nine" ,"ten"));
