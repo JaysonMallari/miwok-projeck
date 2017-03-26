@@ -15,11 +15,12 @@
         />
 
 <LinearLayout
+    android:id="@+id/list_background_color"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingLeft="16dp"
-    android:background="@color/category_numbers">
+   >
 
     <TextView
         android:id="@+id/miwok_text_view"

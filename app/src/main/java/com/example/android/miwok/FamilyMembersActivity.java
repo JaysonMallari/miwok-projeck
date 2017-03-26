@@ -34,7 +34,7 @@ public class FamilyMembersActivity extends AppCompatActivity {
     // method to setup the adapter
     public void setFamilyAdapter(){
         // Construct a new WordAdapter
-        WordAdapter adapter  =  new WordAdapter(this, words);
+        WordAdapter adapter  =  new WordAdapter(this, words, R.color.category_family);
 
         // cast  the ListView
         ListView listView = (ListView) findViewById(R.id.list);
