@@ -13,6 +13,9 @@ public class Word {
     /** miwok translation of the word*/
     private String mMiwokTranslation;
 
+    /** audio resouce Id */
+    private int mMediaResouceId;
+
     /** initialize the value for no image */
     private static final int NO_IMAGE_PROVIDED = -1;
 
@@ -20,16 +23,18 @@ public class Word {
     private int mImageResourceId = NO_IMAGE_PROVIDED;
 
     //1st Constructor that takes 2 String parameeter
-    public Word(String defaultTranslation, String miwokTranslation){
+    public Word(String defaultTranslation, String miwokTranslation, int mediaResourceId){
         mDefaultTranslation = defaultTranslation;
         mMiwokTranslation = miwokTranslation;
+        mMediaResouceId = mediaResourceId;
     }
 
     //2nd Constructor that take 2 String and one int parameter
-    public Word(String defaultTranslation, String miwokTranslation, int imageResourceId){
+    public Word(String defaultTranslation, String miwokTranslation, int imageResourceId, int mediaResourceId){
          mDefaultTranslation = defaultTranslation;
          mMiwokTranslation = miwokTranslation;
          mImageResourceId = imageResourceId;
+         mMediaResouceId = mediaResourceId;
     }
 
     /**
@@ -60,6 +65,13 @@ public class Word {
      */
     public boolean hasImage(){
         return  mImageResourceId != NO_IMAGE_PROVIDED;
+    }
+
+    /**
+     *  return the media resource id
+     */
+    public int getmMediaResouceId(){
+        return mMediaResouceId;
     }
 
 }
