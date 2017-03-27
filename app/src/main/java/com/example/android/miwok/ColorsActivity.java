@@ -76,6 +76,17 @@ public class ColorsActivity extends AppCompatActivity {
     }
 
     /**
+     *  Release the media resource onStop()
+     */
+    @Override
+    protected void onStop(){
+        super.onStop();
+        //  When the activity is stopped, released the media player resouce
+        // because we wont be playing any more sounds
+        releaseMediaPlayer();
+    }
+
+    /**
      * Clean up the media player by releasing its resources.
      */
     private void releaseMediaPlayer() {
