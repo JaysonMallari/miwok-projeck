@@ -12,7 +12,14 @@ import java.util.Arrays;
 
 public class PhrasesActivity extends AppCompatActivity {
 
-    MediaPlayer mMediaPLayer;
+    private MediaPlayer mMediaPLayer;
+
+    private MediaPlayer.OnCompletionListener mOnCompletionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+
+        }
+    };
 
    final ArrayList<Word> words = new ArrayList<Word>(
             Arrays.asList(
@@ -52,10 +59,36 @@ public class PhrasesActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word  = words.get(position);
 
+                // released the audio file if it is exist because
+                // we are about to play another audio file
+                releaseMediaPlayer();
+
+                // created a media player and setup the resource id
                 mMediaPLayer = MediaPlayer.create(PhrasesActivity.this, word.getmMediaResouceId());
+                // start the audio file
                 mMediaPLayer.start();
+
+                // setup a on completion listener for the media player, so that we
+                // can stop and released it onece it finished playing .
+                mMediaPLayer.setOnCompletionListener(mOnCompletionListener);
             }
         });
+    }
 
+    /**
+     * Clean up the media player by releasing its resources.
+     */
+    private void releaseMediaPlayer() {
+        // If the media player is not null, then it may be currently playing a sound.
+        if (mMediaPLayer != null) {
+            // Regardless of the current state of the media player, release its resources
+            // because we no longer need it.
+            mMediaPLayer.release();
+
+            // Set the media player back to null. For our code, we've decided that
+            // setting the media player to null is an easy way to tell that the media player
+            // is not configured to play an audio file at the moment.
+            mMediaPLayer = null;
+        }
     }
 }

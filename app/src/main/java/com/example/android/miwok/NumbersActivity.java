@@ -11,7 +11,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class NumbersActivity extends AppCompatActivity {
-    MediaPlayer mMediaPLayer;
+    private MediaPlayer mMediaPLayer;
+
+    private MediaPlayer.OnCompletionListener mOnCOmpletionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+
+        }
+    };
+
     final ArrayList<Word> words  = new ArrayList<Word>(
             Arrays.asList(
                     new Word("one","lutti",R.drawable.number_one,R.raw.number_one),
@@ -61,9 +69,39 @@ public class NumbersActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word  = words.get(position);
+
+                // Release the media player if it is exist because were about
+                // to play another audio file
+                releaseMediaPlayer();
+
+                // create a mediaplayer and setup the resource id
                 mMediaPLayer = MediaPlayer.create(NumbersActivity.this,word.getmMediaResouceId());
+
+                // start the audio file
                 mMediaPLayer.start();
+
+                // setup the listener on the media player, so that we can stop and release the
+                // media player once the sounds has finished playing
+                mMediaPLayer.setOnCompletionListener(mOnCOmpletionListener);
+
             }
         });
+    }
+
+    /**
+     * Clean up the media player by releasing its resources.
+     */
+    private void releaseMediaPlayer() {
+        // If the media player is not null, then it may be currently playing a sound.
+        if (mMediaPLayer != null) {
+            // Regardless of the current state of the media player, release its resources
+            // because we no longer need it.
+            mMediaPLayer.release();
+
+            // Set the media player back to null. For our code, we've decided that
+            // setting the media player to null is an easy way to tell that the media player
+            // is not configured to play an audio file at the moment.
+            mMediaPLayer = null;
+        }
     }
 }

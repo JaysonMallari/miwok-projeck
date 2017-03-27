@@ -12,7 +12,14 @@ import java.util.Arrays;
 
 public class ColorsActivity extends AppCompatActivity {
 
-    MediaPlayer mMediaPlayer;
+    private MediaPlayer mMediaPlayer;
+
+    private MediaPlayer.OnCompletionListener mOnCOmpletionListener = new MediaPlayer.OnCompletionListener(){
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            releaseMediaPlayer();
+        }
+    };
 
     final ArrayList<Word> words  = new ArrayList<Word>(
             Arrays.asList(
@@ -52,9 +59,36 @@ public class ColorsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word = words.get(position);
 
+                // release the media player because we are about to player a different audio file
+                releaseMediaPlayer();
+
+                // created a media player and setup the resource id
                 mMediaPlayer = MediaPlayer.create(ColorsActivity.this, word.getmMediaResouceId());
+
+                // start audio file
                 mMediaPlayer.start();
+
+                // setup On completion listener to the media player so that we can stop and release
+                // the media player once it finished playing.
+                mMediaPlayer.setOnCompletionListener(mOnCOmpletionListener);
             }
         });
+    }
+
+    /**
+     * Clean up the media player by releasing its resources.
+     */
+    private void releaseMediaPlayer() {
+        // If the media player is not null, then it may be currently playing a sound.
+        if (mMediaPlayer != null) {
+            // Regardless of the current state of the media player, release its resources
+            // because we no longer need it.
+            mMediaPlayer.release();
+
+            // Set the media player back to null. For our code, we've decided that
+            // setting the media player to null is an easy way to tell that the media player
+            // is not configured to play an audio file at the moment.
+            mMediaPlayer = null;
+        }
     }
 }

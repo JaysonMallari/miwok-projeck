@@ -12,7 +12,14 @@ import java.util.Arrays;
 
 public class FamilyMembersActivity extends AppCompatActivity {
 
-    MediaPlayer mMediaPlayer;
+    private MediaPlayer mMediaPlayer;
+
+    private MediaPlayer.OnCompletionListener mOnCompletionListener = new MediaPlayer.OnCompletionListener() {
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+            releaseMediaPlayer();
+        }
+    };
 
     final ArrayList<Word> words = new ArrayList<Word>(
             Arrays.asList(
@@ -54,9 +61,37 @@ public class FamilyMembersActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word  = words.get(position);
 
+                // Release the media file if it is exist because we are about to play
+                // another media file from our list.
+
+
+                // create a media player and setup the resource id
                 mMediaPlayer = MediaPlayer.create(FamilyMembersActivity.this, word.getmMediaResouceId());
+
+                // start the audio file
                 mMediaPlayer.start();
+
+                // setup a listener to our media player, so that we can stop and release
+                // the media once the sounds has finished playing.
+                mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
             }
         });
+    }
+
+    /**
+     * Clean up the media player by releasing its resources.
+     */
+    private void releaseMediaPlayer() {
+        // If the media player is not null, then it may be currently playing a sound.
+        if (mMediaPlayer != null) {
+            // Regardless of the current state of the media player, release its resources
+            // because we no longer need it.
+            mMediaPlayer.release();
+
+            // Set the media player back to null. For our code, we've decided that
+            // setting the media player to null is an easy way to tell that the media player
+            // is not configured to play an audio file at the moment.
+            mMediaPlayer = null;
+        }
     }
 }
