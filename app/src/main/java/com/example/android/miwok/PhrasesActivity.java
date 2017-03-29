@@ -1,5 +1,7 @@
 package com.example.android.miwok;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PhrasesActivity extends AppCompatActivity {
+
+    private AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener =
+            new AudioManager.OnAudioFocusChangeListener() {
+                @Override
+                public void onAudioFocusChange(int focusChange) {
+                    if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+                            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
+                                // pause playback
+                                mMediaPLayer.pause();
+                                // start from the beginning
+                                mMediaPLayer.seekTo(0);
+                    }else if(focusChange == AudioManager.AUDIOFOCUS_GAIN){
+                                // resume playback
+                                mMediaPLayer.start();
+                    }else if(focusChange == AudioManager.AUDIOFOCUS_LOSS){
+                                // stop playback and cleanup resources
+                                releaseMediaPlayer();
+                    }
+                }
+            };
+
+    private AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
     private MediaPlayer mMediaPLayer;
 
@@ -59,18 +83,28 @@ public class PhrasesActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word  = words.get(position);
 
-                // released the audio file if it is exist because
-                // we are about to play another audio file
-                releaseMediaPlayer();
+                int result  = mAudioManager.requestAudioFocus(mAudioFocusChangeListener,
+                                // use the miusic stream
+                                AudioManager.STREAM_MUSIC,
+                                // request for permanent focus
+                                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+                        );
+                if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 
-                // created a media player and setup the resource id
-                mMediaPLayer = MediaPlayer.create(PhrasesActivity.this, word.getmMediaResouceId());
-                // start the audio file
-                mMediaPLayer.start();
+                    // released the audio file if it is exist because
+                    // we are about to play another audio file
+                    releaseMediaPlayer();
 
-                // setup a on completion listener for the media player, so that we
-                // can stop and released it onece it finished playing .
-                mMediaPLayer.setOnCompletionListener(mOnCompletionListener);
+                    // created a media player and setup the resource id
+                    mMediaPLayer = MediaPlayer.create(PhrasesActivity.this, word.getmMediaResouceId());
+                    // start the audio file
+                    mMediaPLayer.start();
+
+                    // setup a on completion listener for the media player, so that we
+                    // can stop and released it onece it finished playing .
+                    mMediaPLayer.setOnCompletionListener(mOnCompletionListener);
+
+                }
             }
         });
     }
@@ -100,6 +134,8 @@ public class PhrasesActivity extends AppCompatActivity {
             // setting the media player to null is an easy way to tell that the media player
             // is not configured to play an audio file at the moment.
             mMediaPLayer = null;
+            //abandon audio focus when playback is completed
+            mAudioManager.abandonAudioFocus(mAudioFocusChangeListener);
         }
     }
 }

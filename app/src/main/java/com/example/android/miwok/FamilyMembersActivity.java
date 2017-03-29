@@ -1,5 +1,7 @@
 package com.example.android.miwok;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class FamilyMembersActivity extends AppCompatActivity {
+
+    private AudioManager.OnAudioFocusChangeListener mAudiofocusChangeListener =
+            new AudioManager.OnAudioFocusChangeListener() {
+                @Override
+                public void onAudioFocusChange(int focusChange) {
+                    if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+                            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
+                                // pause playback
+                                mMediaPlayer.pause();
+                                mMediaPlayer.seekTo(0);
+                    }else if(focusChange == AudioManager.AUDIOFOCUS_GAIN){
+                                // start playback
+                                mMediaPlayer.start();
+                    }else if(focusChange == AudioManager.AUDIOFOCUS_LOSS){
+                                // stop playbakc and cleaup resources
+                                releaseMediaPlayer();
+                    }
+
+                }
+            };
+
+    private AudioManager mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
     private MediaPlayer mMediaPlayer;
 
@@ -61,19 +85,30 @@ public class FamilyMembersActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word  = words.get(position);
 
-                // Release the media file if it is exist because we are about to play
-                // another media file from our list.
+                int result = mAudioManager.requestAudioFocus(mAudiofocusChangeListener,
+                            // use the music stream
+                            AudioManager.STREAM_MUSIC,
+                            // request permanent focus
+                            AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+                        );
 
+                if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 
-                // create a media player and setup the resource id
-                mMediaPlayer = MediaPlayer.create(FamilyMembersActivity.this, word.getmMediaResouceId());
+                    // Release the media file if it is exist because we are about to play
+                    // another media file from our list.
+                    releaseMediaPlayer();
 
-                // start the audio file
-                mMediaPlayer.start();
+                    // create a media player and setup the resource id
+                    mMediaPlayer = MediaPlayer.create(FamilyMembersActivity.this, word.getmMediaResouceId());
 
-                // setup a listener to our media player, so that we can stop and release
-                // the media once the sounds has finished playing.
-                mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
+                    // start the audio file
+                    mMediaPlayer.start();
+
+                    // setup a listener to our media player, so that we can stop and release
+                    // the media once the sounds has finished playing.
+                    mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
+
+                }
             }
         });
     }
@@ -103,6 +138,8 @@ public class FamilyMembersActivity extends AppCompatActivity {
             // setting the media player to null is an easy way to tell that the media player
             // is not configured to play an audio file at the moment.
             mMediaPlayer = null;
+            // abandon audio focus when playback is completed
+            mAudioManager.abandonAudioFocus(mAudiofocusChangeListener);
         }
     }
 }

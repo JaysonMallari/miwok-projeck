@@ -1,5 +1,7 @@
 package com.example.android.miwok;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +13,27 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class ColorsActivity extends AppCompatActivity {
+
+    private AudioManager mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+
+    private AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener =
+            new AudioManager.OnAudioFocusChangeListener() {
+                @Override
+                public void onAudioFocusChange(int focusChange) {
+                    if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+                            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
+                                // pause playback
+                                mMediaPlayer.pause();
+                                mMediaPlayer.seekTo(0);
+                    }else if(focusChange == AudioManager.AUDIOFOCUS_GAIN){
+                                // resume playback
+                                mMediaPlayer.start();
+                    }else if(focusChange == AudioManager.AUDIOFOCUS_LOSS){
+                                // stop playback and cleanup resources
+                                releaseMediaPlayer();
+                    }
+                }
+            };
 
     private MediaPlayer mMediaPlayer;
 
@@ -58,19 +81,26 @@ public class ColorsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word = words.get(position);
+                int result = mAudioManager.requestAudioFocus(mAudioFocusChangeListener,
+                            // use the music stream
+                            AudioManager.STREAM_MUSIC,
+                            // request for permanent focus
+                            AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+                        );
+                if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    // release the media player because we are about to player a different audio file
+                    releaseMediaPlayer();
 
-                // release the media player because we are about to player a different audio file
-                releaseMediaPlayer();
+                    // created a media player and setup the resource id
+                    mMediaPlayer = MediaPlayer.create(ColorsActivity.this, word.getmMediaResouceId());
 
-                // created a media player and setup the resource id
-                mMediaPlayer = MediaPlayer.create(ColorsActivity.this, word.getmMediaResouceId());
+                    // start audio file
+                    mMediaPlayer.start();
 
-                // start audio file
-                mMediaPlayer.start();
-
-                // setup On completion listener to the media player so that we can stop and release
-                // the media player once it finished playing.
-                mMediaPlayer.setOnCompletionListener(mOnCOmpletionListener);
+                    // setup On completion listener to the media player so that we can stop and release
+                    // the media player once it finished playing.
+                    mMediaPlayer.setOnCompletionListener(mOnCOmpletionListener);
+                }
             }
         });
     }
@@ -100,6 +130,8 @@ public class ColorsActivity extends AppCompatActivity {
             // setting the media player to null is an easy way to tell that the media player
             // is not configured to play an audio file at the moment.
             mMediaPlayer = null;
+            // abandon audio focus when playback is completed
+            mAudioManager.abandonAudioFocus(mAudioFocusChangeListener);
         }
     }
 }

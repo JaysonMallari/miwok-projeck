@@ -1,5 +1,7 @@
 package com.example.android.miwok;
 
+import android.content.Context;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +14,33 @@ import java.util.Arrays;
 
 public class NumbersActivity extends AppCompatActivity {
     private MediaPlayer mMediaPLayer;
+
+    private AudioManager.OnAudioFocusChangeListener mAudiofocusChangeListener =
+            new AudioManager.OnAudioFocusChangeListener(){
+
+                @Override
+                public void onAudioFocusChange(int focusChange) {
+                    if(focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT ||
+                            focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
+                                // pause playback
+                                mMediaPLayer.pause();
+                                mMediaPLayer.seekTo(0);
+                    }
+                    else if (focusChange == AudioManager.AUDIOFOCUS_GAIN){
+                                // resume playback
+                                mMediaPLayer.start();
+                    }
+                    else if(focusChange == AudioManager.AUDIOFOCUS_LOSS){
+                                // stop playback and clean-up resources
+                                releaseMediaPlayer();
+                    }
+                }
+            };
+
+    private AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+    private AudioManager.OnAudioFocusChangeListener afChangeListener;
+
 
     private MediaPlayer.OnCompletionListener mOnCOmpletionListener = new MediaPlayer.OnCompletionListener() {
         @Override
@@ -70,19 +99,31 @@ public class NumbersActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word  = words.get(position);
 
-                // Release the media player if it is exist because were about
-                // to play another audio file
-                releaseMediaPlayer();
 
-                // create a mediaplayer and setup the resource id
-                mMediaPLayer = MediaPlayer.create(NumbersActivity.this,word.getmMediaResouceId());
+                int result = mAudioManager.requestAudioFocus(mAudiofocusChangeListener,
+                            //Use the music stream
+                            AudioManager.STREAM_MUSIC,
+                            //Request Permanent focus
+                            AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+                        );
 
-                // start the audio file
-                mMediaPLayer.start();
+                if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
 
-                // setup the listener on the media player, so that we can stop and release the
-                // media player once the sounds has finished playing
-                mMediaPLayer.setOnCompletionListener(mOnCOmpletionListener);
+                        // Release the media player if it is exist because were about
+                        // to play another audio file
+                        releaseMediaPlayer();
+
+                        // create a mediaplayer and setup the resource id
+                        mMediaPLayer = MediaPlayer.create(NumbersActivity.this, word.getmMediaResouceId());
+
+                        // start the audio file
+                        mMediaPLayer.start();
+
+                        // setup the listener on the media player, so that we can stop and release the
+                        // media player once the sounds has finished playing
+                        mMediaPLayer.setOnCompletionListener(mOnCOmpletionListener);
+
+                }
 
             }
         });
@@ -114,6 +155,8 @@ public class NumbersActivity extends AppCompatActivity {
             // setting the media player to null is an easy way to tell that the media player
             // is not configured to play an audio file at the moment.
             mMediaPLayer = null;
+            // abandon audio focus when playback is completed
+            mAudioManager.abandonAudioFocus(mAudiofocusChangeListener);
         }
     }
 }
