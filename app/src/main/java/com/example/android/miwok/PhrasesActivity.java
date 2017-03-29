@@ -34,7 +34,7 @@ public class PhrasesActivity extends AppCompatActivity {
                 }
             };
 
-    private AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    private AudioManager mAudioManager;
 
     private MediaPlayer mMediaPLayer;
 
@@ -82,7 +82,7 @@ public class PhrasesActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word  = words.get(position);
-
+                mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 int result  = mAudioManager.requestAudioFocus(mAudioFocusChangeListener,
                                 // use the miusic stream
                                 AudioManager.STREAM_MUSIC,

@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 public class ColorsActivity extends AppCompatActivity {
 
-    private AudioManager mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+    private AudioManager mAudioManager;
 
     private AudioManager.OnAudioFocusChangeListener mAudioFocusChangeListener =
             new AudioManager.OnAudioFocusChangeListener() {
@@ -81,6 +81,7 @@ public class ColorsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word = words.get(position);
+                mAudioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
                 int result = mAudioManager.requestAudioFocus(mAudioFocusChangeListener,
                             // use the music stream
                             AudioManager.STREAM_MUSIC,

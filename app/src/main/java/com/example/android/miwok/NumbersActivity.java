@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class NumbersActivity extends AppCompatActivity {
+
+    // handles the playback of a sound
     private MediaPlayer mMediaPLayer;
 
     private AudioManager.OnAudioFocusChangeListener mAudiofocusChangeListener =
@@ -37,7 +39,8 @@ public class NumbersActivity extends AppCompatActivity {
                 }
             };
 
-    private AudioManager mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    // handles audio focus when playing a sounds file
+    private AudioManager mAudioManager;
 
     private AudioManager.OnAudioFocusChangeListener afChangeListener;
 
@@ -99,7 +102,7 @@ public class NumbersActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Word word  = words.get(position);
 
-
+                mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
                 int result = mAudioManager.requestAudioFocus(mAudiofocusChangeListener,
                             //Use the music stream
                             AudioManager.STREAM_MUSIC,
